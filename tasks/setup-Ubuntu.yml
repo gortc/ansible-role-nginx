@@ -1,14 +1,20 @@
 ---
-- name: Add PPA for Nginx.
-  apt_repository:
-    repo: 'ppa:nginx/{{ nginx_ppa_version }}'
-    state: present
-    update_cache: yes
-  register: nginx_ppa_added
-  when: nginx_ppa_use
+- name: "(Debian/Ubuntu) Add NGINX Signing Key"
+  apt_key:
+    url: http://nginx.org/keys/nginx_signing.key
 
-- name: Ensure nginx will reinstall if the PPA was just added.
+- name: "(Debian/Ubuntu) Add NGINX Repository"
+  apt_repository:
+    repo: "{{item}}"
+  with_items:
+    - deb http://nginx.org/packages/mainline/{{ansible_distribution|lower}}/ {{ansible_distribution_release}} nginx
+    - deb-src http://nginx.org/packages/mainline/{{ansible_distribution|lower}}/ {{ansible_distribution_release}} nginx
+
+- name: Update apt cache.
+  apt: update_cache=yes cache_valid_time=86400
+  changed_when: false
+
+- name: Ensure nginx is installed.
   apt:
     name: nginx
-    state: absent
-  when: nginx_ppa_added.changed
+    state: latest
