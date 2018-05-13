@@ -44,4 +44,9 @@ server {
 {% if item.extra_parameters is defined %}
     {{ item.extra_parameters|indent(4) }}
 {% endif %}
+{% if item.letsencrypt is defined and item.letsencrypt %}
+    location ^~ /.well-known/acme-challenge/ {
+        alias /var/www/acme-challenge/;
+    }
+{% endif %}
 }
