@@ -46,7 +46,7 @@ server {
 {% endif %}
 {% if item.acme is defined and item.acme %}
     location ^~ /.well-known/acme-challenge/ {
-        alias {{ nginx_acme_dir }};
+        root {{ nginx_acme_dir }};
     }
 {% endif %}
 }
